@@ -1,10 +1,10 @@
-import { MapView, MyLocationButton, SearchBar } from "../components";
+import { MapView, ButtonsToolbar, SearchBar } from "../components";
 
 export const Home = () => {
   return (
     <>
       <SearchBar />
-      <MyLocationButton />
+      <ButtonsToolbar />
       <MapView />
     </>
   );

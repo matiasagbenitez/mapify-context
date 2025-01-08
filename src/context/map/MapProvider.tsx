@@ -12,16 +12,19 @@ import { mapReducer } from "./mapReducer";
 import { PlacesContext } from "../places/PlacesContext";
 import { directionsApi } from "../../apis";
 import { DirectionsResponse } from "../../interfaces";
+import { getDuration } from "../../helpers";
 
 export interface MapState {
   isMapReady: boolean;
   map?: Map;
+  style: string;
   markers: Marker[];
 }
 
 const INITIAL_STATE: MapState = {
   isMapReady: false,
   map: undefined,
+  style: "mapbox://styles/mapbox/streets-v11",
   markers: [],
 };
 
@@ -47,6 +50,13 @@ export const MapProvider = ({ children }: ChildProps) => {
     dispatch({ type: "SET_MARKERS", payload: newMarkers });
   }, [places]);
 
+  useEffect(() => {
+    // Si no hay lugares, eliminar polylines
+    if (places.length === 0) {
+      removeRoute();
+    }
+  }, [places]);
+
   const setMap = (map: Map) => {
     new Marker({ color: "#DC3545" })
       .setLngLat(map.getCenter())
@@ -62,12 +72,13 @@ export const MapProvider = ({ children }: ChildProps) => {
     const url = `/${origin.join(",")};${destination.join(",")}`;
     const response = await directionsApi.get<DirectionsResponse>(url);
 
+    if (response.data.code !== "Ok") return;
+
     const { distance, duration, geometry } = response.data.routes[0];
     let kms = distance / 1000;
     kms = Math.round(kms * 100) / 100;
 
     const minutes = Math.floor(duration / 60);
-    console.log(`Distance: ${kms} km, Duration: ${minutes} minutes`);
 
     const { coordinates } = geometry;
     const bounds = new LngLatBounds(origin, origin);
@@ -99,10 +110,7 @@ export const MapProvider = ({ children }: ChildProps) => {
     };
 
     // Eliminar polylines si ya existen
-    if (state.map!.getSource("route")) {
-      state.map!.removeLayer("route");
-      state.map!.removeSource("route");
-    }
+    removeRoute();
 
     state.map!.addSource("route", sourceData);
     state.map!.addLayer({
@@ -118,10 +126,48 @@ export const MapProvider = ({ children }: ChildProps) => {
         "line-width": 8,
       },
     });
+
+    // Añadir un popup con la información de la ruta
+    new Popup()
+      .addClassName("popupRoute")
+      .setLngLat(destination)
+      .setHTML(
+        `<b>Distance:</b> ${kms} km<br><b>Duration:</b> ${getDuration(minutes)}`
+      )
+      .addTo(state.map!);
+  };
+
+  const toggleStyle = () => {
+    const newStyle =
+      state.style === "mapbox://styles/mapbox/streets-v11"
+        ? "mapbox://styles/mapbox/satellite-streets-v11"
+        : "mapbox://styles/mapbox/streets-v11";
+        state.map!.setStyle(newStyle);
+    dispatch({ type: "SET_STYLE", payload: newStyle });
+  };
+
+  const removeRoute = () => {
+    if (!state.map) return;
+    if (state.map!.getLayer("route")) {
+      state.map!.removeLayer("route");
+      state.map!.removeSource("route");
+      const popup = document.querySelector(".popupRoute");
+      if (popup) {
+        popup.remove();
+      }
+    }
   };
 
   return (
-    <MapContext.Provider value={{ ...state, setMap, getRoutesBetweenPlaces }}>
+    <MapContext.Provider
+      value={{
+        ...state,
+        setMap,
+        getRoutesBetweenPlaces,
+        removeRoute,
+        toggleStyle,
+      }}
+    >
       {children}
     </MapContext.Provider>
   );

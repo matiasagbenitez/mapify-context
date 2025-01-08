@@ -50,7 +50,7 @@ export const PlacesProvider = ({ children }: ChildProps) => {
       },
     });
     dispatch({ type: "SET_PLACES", payload: response.data.features });
-    return response.data.features;
+    return response.data!.features;
   };
 
   return (

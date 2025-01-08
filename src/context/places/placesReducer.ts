@@ -4,7 +4,8 @@ import { PlacesState } from "./PlacesProvider";
 type PlacesAction =
     { type: "SET_USER_LOCATION"; payload: [number, number]; } |
     { type: "SET_LOADING_PLACES"; } |
-    { type: "SET_PLACES"; payload: Feature[]; };
+    { type: "SET_PLACES"; payload: Feature[]; } |
+    { type: "RESET_PLACES"; };
 
 export const placesReducer = (state: PlacesState, action: PlacesAction): PlacesState => {
 
@@ -28,6 +29,13 @@ export const placesReducer = (state: PlacesState, action: PlacesAction): PlacesS
                 ...state,
                 isLoadingPlaces: false,
                 places: action.payload,
+            };
+
+        case "RESET_PLACES":
+            return {
+                ...state,
+                isLoadingPlaces: false,
+                places: [],
             };
 
         default:

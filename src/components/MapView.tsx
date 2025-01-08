@@ -13,9 +13,13 @@ export const MapView = () => {
 
     const map = new Map({
       container: mapDiv.current,
-      style: "mapbox://styles/mapbox/streets-v11",
+      style: 'mapbox://styles/mapbox/streets-v11',
       center: userLocation,
       zoom: 12,
+    });
+
+    map.on("click", (e) => {
+      console.log(e.lngLat);
     });
 
     if (map) setMap(map);
