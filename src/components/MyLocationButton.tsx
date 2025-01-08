@@ -7,9 +7,9 @@ export const MyLocationButton = () => {
 
   const onClick = () => {
     if (!isMapReady || !userLocation || !map) return;
-    map.flyTo({ zoom: 12, center: userLocation });
+    map.flyTo({ zoom: 12, center: userLocation, pitch: 0, bearing: 0 });
   };
-  
+
   return (
     <button
       className="btn btn-primary btn-sm fw-bold"
