@@ -1,8 +1,11 @@
-import { useContext } from "react";
-import { PlacesContext } from "../../context";
+import { useContext, useState } from "react";
+import { MapContext, PlacesContext } from "../../context";
+import { Feature } from "../../interfaces";
 
 export const SearchResults = () => {
-  const { isLoadingPlaces, places } = useContext(PlacesContext);
+  const { isLoadingPlaces, places, userLocation } = useContext(PlacesContext);
+  const { map, getRoutesBetweenPlaces } = useContext(MapContext);
+  const [activeId, setActiveId] = useState<string>("");
 
   if (isLoadingPlaces) {
     return (
@@ -11,6 +14,25 @@ export const SearchResults = () => {
       </p>
     );
   }
+
+  const onPlaceClick = (place: Feature) => {
+    if (map) {
+      setActiveId(place.id);
+      map.flyTo({
+        center: [place.center[0], place.center[1]],
+        zoom: 14,
+      });
+    }
+  };
+
+  const onDirectionsClick = (place: Feature) => {
+    if (!userLocation) return;
+    const destination: [number, number] = place.center as [number, number];
+    if (map) {
+      getRoutesBetweenPlaces(userLocation, destination);
+    }
+  };
+
   return (
     <>
       {places.length > 0 && (
@@ -18,41 +40,47 @@ export const SearchResults = () => {
           {places.map((place) => (
             <li
               key={place.id}
-              className="list-group-item list-group-item-action d-flex gap-2"
+              className={`list-group-item d-flex align-items-center ${
+                activeId === place.id ? "active" : ""
+              }`}
+              onClick={() => onPlaceClick(place)}
             >
               <div className="flex-grow-1">
                 <b>{place.text_es}</b>
-                <p className="text-muted mb-0" style={{ fontSize: "0.8rem" }}>
+                <p className="mb-0" style={{ fontSize: "0.8rem" }}>
                   {place.place_name_es}
                 </p>
               </div>
               <div className="d-flex align-items-center justify-content-end">
                 <button
-                  title="Fly to this location"
+                  title="Go to"
                   className="btn btn-transparent btn-sm"
+                  onClick={() => onDirectionsClick(place)}
                 >
                   <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
+                    fill={activeId === place.id ? "#fff" : "#0D6EFD"}
+                    height="25"
                     width="25"
-                    height="25" // Ajusta el alto del ícono según sea necesario
+                    version="1.1"
+                    id="Capa_1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 217.205 217.205"
                   >
-                    <rect
-                      x="0"
-                      y="0"
-                      width="24"
-                      height="24"
-                      rx="4"
-                      fill="#0D6EFD"
-                    />
-                    <path
-                      d="M10 7l5 5-5 5"
-                      fill="none"
-                      stroke="#FFFFFF"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
+                    <g>
+                      <path
+                        d="M215.008,103.299L113.906,2.196c-2.929-2.928-7.678-2.928-10.606,0L2.197,103.299c-2.929,2.93-2.929,7.678,0,10.607
+              l101.103,101.103c1.464,1.464,3.384,2.196,5.303,2.196c1.919,0,3.839-0.732,5.303-2.196l101.103-101.103
+              C217.938,110.976,217.938,106.228,215.008,103.299z M108.603,199.098l-90.496-90.496l90.496-90.496l90.496,90.496L108.603,199.098z
+              "
+                      />
+                      <path
+                        d="M121.998,81.07h-21.298c-11.633,0-21.098,9.465-21.098,21.099v39.406c0,4.143,3.358,7.5,7.5,7.5c4.142,0,7.5-3.357,7.5-7.5
+              v-39.406c0-3.363,2.735-6.099,6.098-6.099h21.298l-6.217,6.216c-2.929,2.929-2.929,7.678-0.001,10.606
+              c1.465,1.465,3.384,2.197,5.304,2.197c1.919,0,3.839-0.732,5.303-2.196l19.021-19.02c1.406-1.406,2.197-3.314,2.197-5.304
+              c0-1.989-0.79-3.897-2.197-5.304l-18.942-18.94c-2.93-2.928-7.678-2.929-10.607,0.001c-2.929,2.929-2.928,7.678,0.001,10.606
+              L121.998,81.07z"
+                      />
+                    </g>
                   </svg>
                 </button>
               </div>
