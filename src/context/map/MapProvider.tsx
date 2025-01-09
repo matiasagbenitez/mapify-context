@@ -11,7 +11,7 @@ import { MapContext } from "./MapContext";
 import { mapReducer } from "./mapReducer";
 import { PlacesContext } from "../places/PlacesContext";
 import { directionsApi } from "../../apis";
-import { DirectionsResponse } from "../../interfaces";
+import { DirectionsResponse, Feature } from "../../interfaces";
 import { getDuration } from "../../helpers";
 
 export interface MapState {
@@ -35,7 +35,7 @@ interface ChildProps {
 export const MapProvider = ({ children }: ChildProps) => {
   const [state, dispatch] = useReducer(mapReducer, INITIAL_STATE);
 
-  const { places } = useContext(PlacesContext);
+  const { places, replaceDestination, destinations } = useContext(PlacesContext);
 
   useEffect(() => {
     state.markers.forEach((marker) => marker.remove());
@@ -158,6 +158,30 @@ export const MapProvider = ({ children }: ChildProps) => {
     }
   };
 
+  const replaceDestinationLocal = (
+    oldDestination: Feature,
+    newDestination: Feature
+  ) => {
+    removeRoute();
+    replaceDestination(oldDestination, newDestination);
+    const place1 = destinations.find((place) => place.id === oldDestination.id);
+    const place2 = destinations.find((place) => place.id === newDestination.id);
+    if (!place1 || !place2) return;
+    const coords1 = place1.geometry.coordinates as [number, number];
+    const coords2 = place2.geometry.coordinates as [number, number];
+    getRoutesBetweenPlaces(coords1, coords2);
+  }
+
+  useEffect(() => {
+    if (destinations.length === 2) {
+      const place1 = destinations[0];
+      const place2 = destinations[1];
+      const coords1 = place1.geometry.coordinates as [number, number];
+      const coords2 = place2.geometry.coordinates as [number, number];
+      getRoutesBetweenPlaces(coords1, coords2);
+    }
+  }, [destinations]);
+
   return (
     <MapContext.Provider
       value={{
@@ -166,6 +190,7 @@ export const MapProvider = ({ children }: ChildProps) => {
         getRoutesBetweenPlaces,
         removeRoute,
         toggleStyle,
+        replaceDestinationLocal,
       }}
     >
       {children}

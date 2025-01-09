@@ -2,15 +2,20 @@ import { useContext, useState } from "react";
 import { MapContext, PlacesContext } from "../../context";
 import { Feature } from "../../interfaces";
 
-export const SearchResults = () => {
-  const { isLoadingPlaces, places, userLocation } = useContext(PlacesContext);
-  const { map, getRoutesBetweenPlaces } = useContext(MapContext);
+interface SearchResultsProps {
+  setView: (view: "searchbar" | "directions") => void;
+  onReset: () => void;
+}
+
+export const SearchResults = ({ setView, onReset }: SearchResultsProps) => {
+  const { map } = useContext(MapContext);
   const [activeId, setActiveId] = useState<string>("");
+  const { isLoadingPlaces, places, initDestinations } = useContext(PlacesContext);
 
   if (isLoadingPlaces) {
     return (
       <p className="small text-center mb-0 my-2 text-muted border-top pt-2">
-        Searching places...
+        Buscando lugares...
       </p>
     );
   }
@@ -26,11 +31,9 @@ export const SearchResults = () => {
   };
 
   const onDirectionsClick = (place: Feature) => {
-    if (!userLocation) return;
-    const destination: [number, number] = place.center as [number, number];
-    if (map) {
-      getRoutesBetweenPlaces(userLocation, destination);
-    }
+    setView("directions");
+    initDestinations(place);
+    onReset();
   };
 
   return (
@@ -40,7 +43,7 @@ export const SearchResults = () => {
           {places.map((place) => (
             <li
               key={place.id}
-              className={`list-group-item d-flex align-items-center ${
+              className={`list-group-item list-group-action d-flex align-items-center ${
                 activeId === place.id ? "active" : ""
               }`}
               onClick={() => onPlaceClick(place)}
@@ -53,7 +56,7 @@ export const SearchResults = () => {
               </div>
               <div className="d-flex align-items-center justify-content-end">
                 <button
-                  title="Go to"
+                  title="Cómo llegar"
                   className="btn btn-transparent btn-sm p-2"
                   onClick={() => onDirectionsClick(place)}
                 >

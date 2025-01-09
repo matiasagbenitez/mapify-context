@@ -42,7 +42,7 @@ export const ButtonsToolbar = () => {
       <div className="d-flex flex-column gap-2">
         <div className="btn-group-vertical" role="group">
           <button
-            title="Go home"
+            title="Ir a mi ubicación"
             className="btn btn-light btn-sm fw-bold"
             onClick={goHome}
           >
@@ -50,7 +50,7 @@ export const ButtonsToolbar = () => {
           </button>
 
           <button
-            title="Reset position"
+            title="Reinicar posición"
             className="btn btn-light btn-sm fw-bold fs-6"
             onClick={resetPosition}
           >
@@ -60,14 +60,14 @@ export const ButtonsToolbar = () => {
 
         <div className="btn-group-vertical" role="group">
           <button
-            title="Zoom in"
+            title="Zoom (+)"
             className="btn btn-light btn-sm fw-bold fs-6"
             onClick={onZoomIn}
           >
             <i className="bi bi-zoom-in"></i>
           </button>
           <button
-            title="Zoom out"
+            title="Zoom (-)"
             className="btn btn-light btn-sm fw-bold fs-6"
             onClick={onZoomOut}
           >
@@ -76,7 +76,7 @@ export const ButtonsToolbar = () => {
         </div>
 
         <button
-          title="Toggle map style"
+          title="Cambiar estilo de mapa"
           className="btn btn-light btn-sm fw-bold fs-6"
           onClick={toggleMapStyle}
         >
@@ -86,6 +86,15 @@ export const ButtonsToolbar = () => {
             <i className="bi bi-map"></i>
           )}
         </button>
+
+        <a
+          href="https://github.com/matiasagbenitez/mapify-context"
+          target="_blank"
+          title="Información"
+          className="btn btn-light btn-sm fw-bold fs-6"
+        >
+          <i className="bi bi-info-circle"></i>
+        </a>
       </div>
     </div>
   );

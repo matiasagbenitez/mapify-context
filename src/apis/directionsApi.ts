@@ -6,7 +6,7 @@ const directionsApi = axios.create({
         alternatives: false,
         geometries: "geojson",
         overview: "simplified",
-        steps: false,
+        steps: true,
         language: "es",
         access_token: import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
     },
