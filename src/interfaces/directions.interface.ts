@@ -5,7 +5,7 @@ export interface DirectionsResponse {
     uuid: string;
 }
 
-export interface Route {
+interface Route {
     weight_name: string;
     weight: number;
     duration: number;
@@ -14,7 +14,7 @@ export interface Route {
     geometry: Geometry;
 }
 
-export interface Geometry {
+interface Geometry {
     coordinates: Array<number[]>;
     type: Type;
 }
@@ -23,7 +23,7 @@ export enum Type {
     LineString = "LineString",
 }
 
-export interface Leg {
+interface Leg {
     notifications: Notification[];
     via_waypoints: any[];
     admins: Admin[];
@@ -35,12 +35,12 @@ export interface Leg {
     summary: string;
 }
 
-export interface Admin {
+interface Admin {
     iso_3166_1_alpha3: string;
     iso_3166_1: string;
 }
 
-export interface Notification {
+interface Notification {
     details: Details;
     subtype: string;
     type: string;
@@ -48,15 +48,15 @@ export interface Notification {
     geometry_index_start: number;
 }
 
-export interface Details {
+interface Details {
     actual_value: string;
     message: string;
 }
 
-export interface Sirns {
+interface Sirns {
 }
 
-export interface Step {
+interface Step {
     intersections: Intersection[];
     maneuver: Maneuver;
     name: string;
@@ -71,7 +71,7 @@ export interface Step {
     exits?: string;
 }
 
-export enum DrivingSide {
+enum DrivingSide {
     Left = "left",
     Right = "right",
     SlightLeft = "slight left",
@@ -79,7 +79,7 @@ export enum DrivingSide {
     Straight = "straight",
 }
 
-export interface Intersection {
+interface Intersection {
     entry: boolean[];
     bearings: number[];
     duration?: number;
@@ -101,13 +101,13 @@ export interface Intersection {
     stop_sign?: boolean;
 }
 
-export enum ClassElement {
+enum ClassElement {
     Motorway = "motorway",
     Toll = "toll",
     Tunnel = "tunnel",
 }
 
-export interface Lane {
+interface Lane {
     indications: DrivingSide[];
     valid_indication?: DrivingSide;
     valid: boolean;

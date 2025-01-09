@@ -24,7 +24,7 @@ export interface Feature {
     matching_place_name?: string;
 }
 
-export interface Context {
+interface Context {
     id: string;
     mapbox_id: string;
     wikidata?: string;
@@ -35,17 +35,17 @@ export interface Context {
     language?: Language;
 }
 
-export enum Language {
+enum Language {
     Es = "es",
     Pt = "pt",
 }
 
-export interface Geometry {
+interface Geometry {
     type: string;
     coordinates: number[];
 }
 
-export interface Properties {
+interface Properties {
     mapbox_id?: string;
     wikidata?: string;
     accuracy?: string;
